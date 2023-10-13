@@ -1,5 +1,4 @@
-
-import { Avatar} from "@mui/material";
+import { Avatar } from "@mui/material";
 import { deepOrange } from '@mui/material/colors';
 import { MessageViewModel } from "../../view-model/message";
 
@@ -7,14 +6,14 @@ export const Message = ({
     name = "Vania Santos",
     timestamp = new Date(),
     content = "Hello World",
-} : MessageViewModel) => {
+}: MessageViewModel) => {
     const firstLetterOfName = name.charAt(0).toUpperCase();
     const timestampString = timestamp.toUTCString();
     return (
         <div className="flex space-x-4">
             {/* Avatar Block */}
             <div className="float-left self-end">
-                <Avatar sx={{ bgcolor: deepOrange[500]}}>{firstLetterOfName}</Avatar>
+                <Avatar sx={{ bgcolor: deepOrange[500] }}>{firstLetterOfName}</Avatar>
             </div>
             {/* Message Block */}
             <div className="">

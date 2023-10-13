@@ -4,5 +4,8 @@
     "plugin:storybook/recommended",
     "eslint:recommended",
     "prettier"
-  ]
+  ],
+  "rules": {
+    "no-unused-vars": "warn"
+  }
 }
