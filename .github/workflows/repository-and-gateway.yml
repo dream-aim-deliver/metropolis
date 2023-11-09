@@ -23,6 +23,7 @@ jobs:
         run: npm install
       - name: Start containers
         run: |
+          cp .env.template .env.test
           docker pull arangodb:latest
           docker compose up -d
           sleep 15
