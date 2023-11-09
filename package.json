@@ -27,6 +27,7 @@
     "arangojs": "^8.6.0",
     "color": "^4.2.3",
     "colorcolor": "^3.0.1",
+    "dotenv": "^16.3.1",
     "hsl-to-hex": "^1.0.0",
     "inversify": "^6.0.2",
     "iron-session": "^6.3.1",

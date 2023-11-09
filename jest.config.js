@@ -6,4 +6,5 @@ module.exports = {
     '<rootDir>/test/repository/jest.repository.config.js',
     '<rootDir>/test/sdk/jest.sdk.config.js',
   ],
+  setupFiles: ['<rootDir>/test/setupJest.js'],
 }
