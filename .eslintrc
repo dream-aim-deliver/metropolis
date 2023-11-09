@@ -2,8 +2,7 @@
   "root": true,
   "env": {
     "browser": true,
-    "es2021": true,
-    "jest": true
+    "es2021": true
   },
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
@@ -14,15 +13,17 @@
     "sourceType": "module"
   },
   "plugins": ["react", "@typescript-eslint", "react-app", "react-app/jest"],
-  "extends": [
-    "eslint:recommended",
-    "plugin:@typescript-eslint/eslint-recommended",
-    "plugin:@typescript-eslint/recommended",
-    "react-app",
-    "react-app/jest"
-  ],
+  "extends": ["eslint:recommended", "plugin:@typescript-eslint/eslint-recommended", "plugin:@typescript-eslint/recommended", "react-app", "react-app/jest"],
   "ignorePatterns": ["node_modules", "dist"],
   "rules": {
     "@typescript-eslint/no-var-requires": 0
-  }
+  },
+  "overrides": [
+    {
+      "files": ["*.test.ts", "*.test.tsx"],
+      "env": {
+        "jest": true
+      }
+    }
+  ]
 }
