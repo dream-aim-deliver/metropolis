@@ -23,7 +23,7 @@ jobs:
         run: |
           cp .env.template .env.test
           docker pull arangodb:latest
-          docker compose up -d --env-file .env.test
+          docker compose --env-file ./.env.test up -d
           sleep 15
       - name: Install dependencies
         run: npm install

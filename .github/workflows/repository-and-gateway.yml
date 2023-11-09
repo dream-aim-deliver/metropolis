@@ -24,7 +24,7 @@ jobs:
       - name: Start containers
         run: |
           cp .env.template .env.test
-          docker pull arangodb:latest --env-file .env.test
+          docker compose --env-file ./.env.test up -d
           docker compose up -d
           sleep 15
       - name: Run Gateway Tests
