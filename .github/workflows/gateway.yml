@@ -1,0 +1,27 @@
+name: Gateway Tests
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+jobs:
+  test:
+    name: Gateway Tests
+    strategy:
+      matrix:
+        node-version: [18.16.1, 20.4.0]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Use Node.js 18.x
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: Install dependencies
+        run: npm install
+      - name: Run Gateway Tests
+        run: npm run test:gateway
+      - name: Run Repository Tests
+        run: npm run test:repository

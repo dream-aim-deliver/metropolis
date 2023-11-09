@@ -15,10 +15,7 @@ import { PassThrough } from 'node:stream'
  * @template TDTO The type of the data transfer object (DTO) that represents the API response.
  * @template TStreamData The type of the data that is streamed in the API response.
  */
-export abstract class BaseStreamableEndpoint<
-  TDTO extends BaseStreamableDTO,
-  TStreamData,
-> extends Transform {
+export abstract class BaseStreamableEndpoint<TDTO extends BaseStreamableDTO, TStreamData> extends Transform {
   /**
    * A boolean value that indicates whether the stream should be formatted as NDJSON (newline-delimited JSON) or not.
    */
@@ -39,10 +36,6 @@ export abstract class BaseStreamableEndpoint<
    * An output port that provides methods for retrieving environment configuration values.
    */
   protected envConfigGateway: EnvConfigGatewayOutputPort
-  /**
-   * A string that represents the base URL of the Rucio server.
-   */
-  protected rucioHost: string = 'http://rucio-host.com'
 
   /**
    * Creates a new instance of the `BaseStreamableEndpoint` class.
@@ -51,12 +44,8 @@ export abstract class BaseStreamableEndpoint<
   constructor(streamAsNDJSON: boolean = true) {
     super({ objectMode: true })
     this.streamAsNDJSON = streamAsNDJSON
-    this.streamingGateway = appContainer.get<StreamGatewayOutputPort>(
-      GATEWAYS.STREAM,
-    )
-    this.envConfigGateway = appContainer.get<EnvConfigGatewayOutputPort>(
-      GATEWAYS.ENV_CONFIG,
-    )
+    this.streamingGateway = appContainer.get<StreamGatewayOutputPort>(GATEWAYS.STREAM)
+    this.envConfigGateway = appContainer.get<EnvConfigGatewayOutputPort>(GATEWAYS.ENV_CONFIG)
   }
 
   /**
@@ -83,16 +72,10 @@ export abstract class BaseStreamableEndpoint<
       throw new Error(`Request not initialized for ${this.constructor.name}`)
     }
 
-    const { type, content } = await this.streamingGateway.getJSONChunks(
-      this.request,
-      this.streamAsNDJSON,
-    )
+    const { type, content } = await this.streamingGateway.getJSONChunks(this.request, this.streamAsNDJSON)
     if (type == 'response') {
       const response = content as Response
-      const commonErrors = await handleCommonGatewayEndpointErrors(
-        response.status,
-        response,
-      )
+      const commonErrors = await handleCommonGatewayEndpointErrors(response.status, response)
       if (commonErrors) {
         return commonErrors as TDTO
       }
@@ -116,10 +99,7 @@ export abstract class BaseStreamableEndpoint<
    * @param response The response object returned by the API.
    * @returns A promise that resolves to a data transfer object (DTO) containing the error, or `undefined` if no error occurred.
    */
-  abstract reportErrors(
-    statusCode: number,
-    response: Response,
-  ): Promise<TDTO | undefined>
+  abstract reportErrors(statusCode: number, response: Response): Promise<TDTO | undefined>
 
   /**
    * Creates a data transfer object (DTO) from the streamed data returned by the API.
@@ -166,20 +146,17 @@ export abstract class BaseEndpoint<TDTO extends BaseDTO> {
    */
   protected initialized: boolean = false
   protected request: HTTPRequest | undefined
-  protected rucioHost: string = 'https://rucio-host.com'
 
   protected url: string = ''
 
   protected envConfigGateway: EnvConfigGatewayOutputPort
 
   constructor() {
-    this.envConfigGateway = appContainer.get<EnvConfigGatewayOutputPort>(
-      GATEWAYS.ENV_CONFIG,
-    )
+    this.envConfigGateway = appContainer.get<EnvConfigGatewayOutputPort>(GATEWAYS.ENV_CONFIG)
   }
 
   /**
-   * Initializes the endpoint by setting the Rucio host URL.
+   * Initializes the endpoint by setting the host URL.
    * This function MUST be overriden by subclasses to perform additional initialization steps.
    * The overriden function MUST call `super.initialize()` before returning.
    * The overriden function MUST set this.intialized to `true` after performing all initialization steps.
@@ -194,10 +171,7 @@ export abstract class BaseEndpoint<TDTO extends BaseDTO> {
    * @returns A promise that resolves to the API response as a data transfer object (DTO) containing the error,
    * or `undefined` if the error could not be identified clearly.
    */
-  abstract reportErrors(
-    statusCode: number,
-    response: Response,
-  ): Promise<TDTO | undefined>
+  abstract reportErrors(statusCode: number, response: Response): Promise<TDTO | undefined>
 
   /**
    * Creates a data transfer object (DTO) from the API response.
@@ -224,15 +198,9 @@ export abstract class BaseEndpoint<TDTO extends BaseDTO> {
 
     const preparedRequest = prepareRequestArgs(this.request)
 
-    const response: Response = await fetch(
-      preparedRequest.url,
-      preparedRequest.requestArgs,
-    )
+    const response: Response = await fetch(preparedRequest.url, preparedRequest.requestArgs)
     if (!response.ok) {
-      const commonErrors = await handleCommonGatewayEndpointErrors(
-        response.status,
-        response,
-      )
+      const commonErrors = await handleCommonGatewayEndpointErrors(response.status, response)
       if (commonErrors) {
         return commonErrors as TDTO
       }
@@ -267,10 +235,7 @@ export abstract class BaseEndpoint<TDTO extends BaseDTO> {
  * @returns A promise that resolves to the API response as a data transfer object (DTO) containing the error,
  * or `undefined` if the error could not be identified clearly.
  */
-async function handleCommonGatewayEndpointErrors<TDTO extends BaseDTO>(
-  statusCode: number,
-  response: Response,
-): Promise<TDTO | undefined> {
+async function handleCommonGatewayEndpointErrors<TDTO extends BaseDTO>(statusCode: number, response: Response): Promise<TDTO | undefined> {
   const dto: TDTO = {
     status: 'error',
     errorName: BaseHttpErrorTypes.UNKNOWN_ERROR.errorName,
@@ -322,9 +287,7 @@ async function handleCommonGatewayEndpointErrors<TDTO extends BaseDTO>(
  * @param response The HTTPResponse object returned by the API.
  * @returns undefined if no error details could be extracted from the response, or a json object containing the error details.
  */
-export async function extractErrorMessage(
-  response: Response,
-): Promise<any | undefined> {
+export async function extractErrorMessage(response: Response): Promise<any | undefined> {
   try {
     const error = await response.json()
     return error

@@ -2,12 +2,12 @@ export type TRequestModel = any
 
 /**
  * A type that represents an authenticated request model.
- * @typeparam TRequestModel The type of the request model which must include rucioAuthToken key.
+ * @typeparam TRequestModel The type of the request model which must include authToken key.
  * @remarks
- * The rucioAuthToken is made available by the session
+ * The authToken is made available by the session or client. The latter is in case of token based authentication.
  */
 export type AuthenticatedRequestModel<TRequestModel> = TRequestModel & {
-  rucioAuthToken: string
+  authToken: string
 }
 
 /**
