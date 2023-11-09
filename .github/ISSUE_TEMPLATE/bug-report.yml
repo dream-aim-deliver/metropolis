@@ -32,7 +32,7 @@ body:
     attributes:
       label: Metropolis Version
       description: The used metropolis Version.
-      placeholder: 'e.g. 1.28.4, master'
+      placeholder: 'e.g. 1.28.4, main'
 
   - type: textarea
     attributes:

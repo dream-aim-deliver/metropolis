@@ -2,10 +2,10 @@ name: API and Component Tests
 on:
   push:
     branches:
-      - master
+      - main
   pull_request:
     branches:
-      - master
+      - main
 jobs:
   test:
     name: Test API and Components
@@ -25,4 +25,3 @@ jobs:
         run: npm run test:component
       - name: Run API Tests
         run: npm run test:api
-    
