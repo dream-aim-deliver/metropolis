@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "clean": "rimraf .next .swc",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
@@ -21,9 +22,12 @@
     "color": "^4.2.3",
     "colorcolor": "^3.0.1",
     "hsl-to-hex": "^1.0.0",
+    "inversify": "^6.0.2",
+    "iron-session": "^6.3.1",
     "next": "13.5.4",
     "react": "^18",
-    "react-dom": "^18"
+    "react-dom": "^18",
+    "reflect-metadata": "^0.1.13"
   },
   "devDependencies": {
     "@storybook/addon-essentials": "^7.5.3",

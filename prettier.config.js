@@ -4,4 +4,5 @@ module.exports = {
   semi: false, // Specify if you want to print semicolons at the end of statements
   singleQuote: true, // If you want to use single quotes
   arrowParens: 'avoid', // Include parenthesis around a sole arrow function parameter
+  printWidth: 180, // Specify the length of line that the printer will wrap on
 }
