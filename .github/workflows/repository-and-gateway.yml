@@ -21,7 +21,15 @@ jobs:
           node-version: ${{ matrix.node-version }}
       - name: Install dependencies
         run: npm install
+      - name: Start containers
+        run: |
+          cp .env.template .env.test
+          docker compose --env-file ./.env.test up -d
+          docker compose up -d
+          sleep 15
       - name: Run Gateway Tests
         run: npm run test:gateway
       - name: Run Repository Tests
         run: npm run test:repository
+      - name: Stop containers
+        run: docker compose down

@@ -9,7 +9,7 @@ class EnvConfigGateway implements EnvConfigGatewayOutputPort {
     const database = this.get('arango_database', true)
     const port = parseInt(this.get('arango_port', true) || '8529')
     const username = this.get('arango_user', true)
-    const password = this.get('arangodb_password', true)
+    const password = this.get('arango_password', true)
     if (!url || !port || !database || !username || !password) throw new InvalidConfig('ArangoDB configuration is invalid')
     return { URL: url, PORT: port, DATABASE: database, USERNAME: username, PASSWORD: password }
   }

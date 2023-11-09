@@ -11,8 +11,8 @@ class ArangoDBRepository implements ArangoDBRepositoryOutputPort {
   constructor(@inject(GATEWAYS.ENV_CONFIG) private envConfig: EnvConfigGatewayOutputPort) {
     this.db = undefined
   }
-  async initialize(): Promise<ArangoDBInitDTO<Database>> {
-    if (this.db) return { status: 'success', db: this.db }
+  async connect(): Promise<ArangoDBInitDTO<Database>> {
+    if (this.db) return { status: 'success', arangoDB: this.db }
 
     const { URL, PORT, DATABASE, USERNAME, PASSWORD } = this.envConfig.arangoDBConfig()
     try {
@@ -22,7 +22,7 @@ class ArangoDBRepository implements ArangoDBRepositoryOutputPort {
         auth: { username: USERNAME, password: PASSWORD },
       })
       this.db = db
-      return { status: 'success', db: db }
+      return { status: 'success', arangoDB: db }
     } catch (error: any) {
       return { status: 'error', errorMessage: error.message }
     }
