@@ -4,5 +4,5 @@ export default interface ArangoDBRepositoryOutputPort {
   /**
    * Initializes the ArangoDB database connection
    */
-  initialize(): Promise<ArangoDBInitDTO>
+  connect(): Promise<ArangoDBInitDTO<any>>
 }

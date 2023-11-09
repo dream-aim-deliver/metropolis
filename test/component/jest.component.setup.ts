@@ -12,7 +12,7 @@ Object.defineProperty(window, 'scrollTo', { value: noop, writable: true })
 
 const setupTests = async () => {
   const projectDir = process.cwd()
-  loadEnvConfig(projectDir)
+  await loadEnvConfig(projectDir)
 }
 
 export default setupTests
