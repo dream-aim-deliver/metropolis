@@ -1,6 +1,6 @@
 import { ArangoDBInitDTO } from '../../dto/arangodb-dto'
 
-export default interface ArangoDBRepository {
+export default interface ArangoDBRepositoryOutputPort {
   /**
    * Initializes the ArangoDB database connection
    */

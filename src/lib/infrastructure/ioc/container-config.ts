@@ -11,13 +11,19 @@ import GATEWAYS from './ioc-symbols-gateway'
 import EnvConfigGatewayOutputPort from '@/lib/core/port/secondary/env-config-gateway-output-port'
 import EnvConfigGateway from '../gateway/env-config-gateway'
 import { loadFeaturesSync } from '@/lib/sdk/ioc-helpers'
+import ArangoDBRepositoryOutputPort from '@/lib/core/port/secondary/arangodb-repository-output-port'
+import ArangoDBRepository from '../repository/arangodb-repository'
 
 /**
  * IoC Container configuration for the application.
  */
 const appContainer = new Container()
 
+/** GATEWAYS */
 appContainer.bind<EnvConfigGatewayOutputPort>(GATEWAYS.ENV_CONFIG).to(EnvConfigGateway)
 appContainer.bind<StreamGatewayOutputPort>(GATEWAYS.STREAM).to(StreamingGateway)
+
+/** REPOSITORIES */
+appContainer.bind<ArangoDBRepositoryOutputPort>(GATEWAYS.ARANGODB).to(ArangoDBRepository)
 
 export default appContainer
