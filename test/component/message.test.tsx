@@ -10,6 +10,5 @@ describe('color', () => {
 
     })
     expect(screen.getByText('Mayank Sharma')).toBeInTheDocument()
-
   })
 })
