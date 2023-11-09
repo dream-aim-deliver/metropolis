@@ -17,4 +17,6 @@ import { loadFeaturesSync } from '@/lib/sdk/ioc-helpers'
  */
 const appContainer = new Container()
 
+appContainer.bind<EnvConfigGatewayOutputPort>(GATEWAYS.ENV_CONFIG).to(EnvConfigGateway)
+
 export default appContainer
