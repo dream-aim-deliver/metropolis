@@ -10,21 +10,28 @@ interface TDocument {
 }
 
 describe('ArangoDB Document Repository Tests', () => {
-    it('should create a new document in a collection in ArangoDB', async () => {
-        const arangoDBCollectionRepository = appContainer.get<ArangoDBCollectionRepositoryOutputPort>(REPOSITORY.ARANGODB_COLLECTION)
-        const collectionResultDTO: ArangoDBdocumentDTO<TDocument> = await arangoDBCollectionRepository.createDocumentCollection<TDocument>('testCollection')
-        expect(collectionResultDTO.status).toBe('success')
-
-        const arangoDBDocumentRepository = appContainer.get<ArangoDBDocumentRepositoryOutputPort>(REPOSITORY.ARANGODB_DOCUMENT)
-        const result: ArangoDBdocumentDTO<TDocument> = await arangoDBDocumentRepository.createDocument<TDocument>('testCollection', { name: 'testDocument' })
-        expect(result.status).toBe('success')
-        expect(result.document).toBeDefined()
-
+    beforeAll(async () => {
         const arangoDBRepository = appContainer.get<ArangoDBRepositoryOutputPort>(REPOSITORY.ARANGODB)
         const db = await arangoDBRepository.connect(true)
         expect(db.status).toBe('success')
         expect(db.arangoDB).toBeDefined()
 
+        const arangoDBCollectionRepository = appContainer.get<ArangoDBCollectionRepositoryOutputPort>(REPOSITORY.ARANGODB_COLLECTION)
+        const collectionResultDTO: ArangoDBdocumentDTO<TDocument> = await arangoDBCollectionRepository.createDocumentCollection<TDocument>('testCollection')
+        expect(collectionResultDTO.status).toBe('success')
+
+    })
+    it('should create a new document in a collection in ArangoDB', async () => {
+        const arangoDBDocumentRepository = appContainer.get<ArangoDBDocumentRepositoryOutputPort>(REPOSITORY.ARANGODB_DOCUMENT)
+        const result: ArangoDBdocumentDTO<TDocument> = await arangoDBDocumentRepository.createDocument<TDocument>('testCollection', { name: 'testDocument' })
+        expect(result.status).toBe('success')
+        expect(result.document).toBeDefined()
+
+
+        const arangoDBRepository = appContainer.get<ArangoDBRepositoryOutputPort>(REPOSITORY.ARANGODB)
+        const db = await arangoDBRepository.connect(true)
+        expect(db.status).toBe('success')
+        expect(db.arangoDB).toBeDefined()
         const arangoDB = db.arangoDB
         const collectionList = await arangoDB?.listCollections()
         expect(collectionList).toBeDefined()
