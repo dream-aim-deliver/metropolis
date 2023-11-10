@@ -4,14 +4,15 @@ import { injectable } from 'inversify'
 
 @injectable()
 class EnvConfigGateway implements EnvConfigGatewayOutputPort {
-  arangoDBConfig(): { URL: string; PORT: number; DATABASE: string; USERNAME: string; PASSWORD: string } {
+  arangoDBConfig(): { URL: string; PORT: number; DATABASE: string; USERNAME: string; PASSWORD: string; ROOT_PASSWORD: string } {
     const url = this.get('arango_url', true)
     const database = this.get('arango_database', true)
     const port = parseInt(this.get('arango_port', true) || '8529')
     const username = this.get('arango_user', true)
     const password = this.get('arango_password', true)
-    if (!url || !port || !database || !username || !password) throw new InvalidConfig('ArangoDB configuration is invalid')
-    return { URL: url, PORT: port, DATABASE: database, USERNAME: username, PASSWORD: password }
+    const rootPassword = this.get('arango_root_password', true)
+    if (!url || !port || !database || !username || !password || !rootPassword) throw new InvalidConfig('ArangoDB configuration is invalid')
+    return { URL: url, PORT: port, DATABASE: database, USERNAME: username, PASSWORD: password, ROOT_PASSWORD: rootPassword }
   }
 
   get(key: string, required: boolean = false): string | undefined {

@@ -3,6 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "docker:dev": "cp .env.development .env && docker-compose --env-file .env.development up -d",
+    "docker:test": "cp .env.test .env && docker-compose --env-file .env.test up -d",
+    "docker:down": "docker-compose rm -fsv && rm .env",
     "clean": "rimraf .next .swc",
     "dev": "next dev",
     "build": "next build",

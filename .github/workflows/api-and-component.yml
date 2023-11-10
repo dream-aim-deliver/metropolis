@@ -21,9 +21,8 @@ jobs:
           node-version: ${{ matrix.node-version }}
       - name: Start Containers
         run: |
-          cp .env.template .env.test
           docker pull arangodb:latest
-          docker compose --env-file ./.env.test up -d
+          npm run docker:test
           sleep 15
       - name: Install dependencies
         run: npm install
