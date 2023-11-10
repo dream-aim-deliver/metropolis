@@ -15,3 +15,10 @@ export interface ArangoDBInitDTO<DB> extends BaseDTO {
 export interface ArangoDBCollectionDTO<TDocument, TCollection> extends BaseDTO {
   collection?: TCollection | undefined
 }
+
+/**
+ * ArangoDBdocumentDTO contains information about status of a document in ArangoDB
+ */
+export interface ArangoDBdocumentDTO<TDocument> extends BaseDTO {
+  document?: TDocument | undefined
+}
