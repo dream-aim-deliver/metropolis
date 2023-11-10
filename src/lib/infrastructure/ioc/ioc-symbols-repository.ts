@@ -1,5 +1,6 @@
 const REPOSITORY = {
   ARANGODB: Symbol.for('ARANGODB'),
+  ARANGODB_COLLECTION: Symbol.for('ARANGODB_COLLECTION')
 }
 
 export default REPOSITORY
