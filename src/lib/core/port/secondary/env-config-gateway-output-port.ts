@@ -15,5 +15,5 @@ export default interface EnvConfigGatewayOutputPort {
    * @throws {@link InvalidConfig} if the configuration is invalid
    * @throws {@link ConfigNotFound} if the configuration is not found
    */
-  arangoDBConfig(): { URL: string; PORT: number; DATABASE: string; USERNAME: string; PASSWORD: string }
+  arangoDBConfig(): { URL: string; PORT: number; DATABASE: string; USERNAME: string; PASSWORD: string; ROOT_PASSWORD: string }
 }
