@@ -1,5 +1,6 @@
 import { ArangoDBdocumentDTO } from "@/lib/core/dto/arangodb-dto"
 import ArangoDBDocumentRepositoryOutputPort from "@/lib/core/port/secondary/arandogb-document-repository-output-port"
+import ArangoDBCollectionRepositoryOutputPort from "@/lib/core/port/secondary/arangodb-collection-repository-output-port"
 import ArangoDBRepositoryOutputPort from "@/lib/core/port/secondary/arangodb-repository-output-port"
 import appContainer from "@/lib/infrastructure/ioc/container-config"
 import REPOSITORY from "@/lib/infrastructure/ioc/ioc-symbols-repository"
@@ -10,6 +11,10 @@ interface TDocument {
 
 describe('ArangoDB Document Repository Tests', () => {
     it('should create a new document in a collection in ArangoDB', async () => {
+        const arangoDBCollectionRepository = appContainer.get<ArangoDBCollectionRepositoryOutputPort>(REPOSITORY.ARANGODB_COLLECTION)
+        const collectionResultDTO: ArangoDBdocumentDTO<TDocument> = await arangoDBCollectionRepository.createDocumentCollection<TDocument>('testCollection')
+        expect(collectionResultDTO.status).toBe('success')
+
         const arangoDBDocumentRepository = appContainer.get<ArangoDBDocumentRepositoryOutputPort>(REPOSITORY.ARANGODB_DOCUMENT)
         const result: ArangoDBdocumentDTO<TDocument> = await arangoDBDocumentRepository.createDocument<TDocument>('testCollection', { name: 'testDocument' })
         expect(result.status).toBe('success')
