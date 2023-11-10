@@ -23,9 +23,8 @@ jobs:
         run: npm install
       - name: Start containers
         run: |
-          cp .env.template .env.test
-          docker compose --env-file ./.env.test up -d
-          docker compose up -d
+          docker pull arangodb:latest
+          npm run docker:test
           sleep 15
       - name: Run Gateway Tests
         run: npm run test:gateway

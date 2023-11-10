@@ -4,7 +4,5 @@ services:
     image: arangodb
     ports:
       - '8529:8529'
-    volumes:
-      - .arangodb:/var/lib/arandodb
-    # env_file:
-    #   - '.env'
+    env_file:
+      - .env
