@@ -13,13 +13,15 @@ class ArangoDBRepository implements ArangoDBRepositoryOutputPort {
     this.arangoDB = undefined
   }
 
-  async connect(): Promise<ArangoDBInitDTO<Database>> {
+  async connect(useDefaultDatabase: boolean = true): Promise<ArangoDBInitDTO<Database>> {
     if (this.arangoDB) return { status: 'success', arangoDB: this.arangoDB }
 
     const { URL, PORT, DATABASE, USERNAME, PASSWORD } = this.envConfig.arangoDBConfig()
+
     try {
       const db = new Database({
         url: `${URL}:${PORT}`,
+        databaseName: useDefaultDatabase ? DATABASE : undefined,
         auth: { username: USERNAME, password: PASSWORD },
       })
       this.arangoDB = db

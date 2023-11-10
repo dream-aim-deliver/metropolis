@@ -4,8 +4,9 @@ import { ArangoDBInitDTO } from '../../dto/arangodb-dto'
 export default interface ArangoDBRepositoryOutputPort {
   /**
    * Initializes the ArangoDB database connection
+   * 
    */
-  connect(): Promise<ArangoDBInitDTO<any>>
+  connect(useDefaultDatabase: boolean): Promise<ArangoDBInitDTO<any>>
 
   /**
    * Creates a new database in ArangoDB
