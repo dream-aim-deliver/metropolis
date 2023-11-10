@@ -12,6 +12,7 @@ interface TDocument {
 describe('ArangoDB Document Repository Tests', () => {
     beforeAll(async () => {
         const arangoDBRepository = appContainer.get<ArangoDBRepositoryOutputPort>(REPOSITORY.ARANGODB)
+        await arangoDBRepository.createDatabase()
         const db = await arangoDBRepository.connect(true)
         expect(db.status).toBe('success')
         expect(db.arangoDB).toBeDefined()
