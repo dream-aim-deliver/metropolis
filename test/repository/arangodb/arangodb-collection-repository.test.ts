@@ -22,6 +22,7 @@ describe('ArangoDB Collection Repository Tests', () => {
     it('should create a new document collection in ArangoDB', async () => {
         const arangoDBCollectionRepository = appContainer.get<ArangoDBCollectionRepositoryOutputPort>(REPOSITORY.ARANGODB_COLLECTION)
         const result: ArangoDBCollectionDTO<TDocument, DocumentCollection<TDocument>> = await arangoDBCollectionRepository.createDocumentCollection<TDocument>('testCollection')
+        console.log(result)
         expect(result.status).toBe('success')
         expect(result.collection).toBeDefined()
 
