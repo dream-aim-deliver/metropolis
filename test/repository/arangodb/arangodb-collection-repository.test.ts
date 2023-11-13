@@ -15,12 +15,15 @@ interface TDocument {
 
 describe('ArangoDB Collection Repository Tests', () => {
     it('should create a new document collection in ArangoDB', async () => {
+
+        const arangoDBRepository = appContainer.get<ArangoDBRepository>(REPOSITORY.ARANGODB)
+        await arangoDBRepository.createDatabase()
+
         const arangoDBCollectionRepository = appContainer.get<ArangoDBCollectionRepositoryOutputPort>(REPOSITORY.ARANGODB_COLLECTION)
         const result: ArangoDBCollectionDTO<TDocument, DocumentCollection<TDocument>> = await arangoDBCollectionRepository.createDocumentCollection<TDocument>('testCollection')
         expect(result.status).toBe('success')
         expect(result.collection).toBeDefined()
 
-        const arangoDBRepository = appContainer.get<ArangoDBRepository>(REPOSITORY.ARANGODB)
         const db = await arangoDBRepository.connect()
         expect(db.status).toBe('success')
         expect(db.arangoDB).toBeDefined()
