@@ -1,5 +1,5 @@
 import { inject, injectable } from 'inversify'
-import { ArangoDBInitDTO } from '@/lib/core/dto/arangodb-dto'
+import { ArangoDBConnectionDTO as ArangoDBConnectionDTO } from '@/lib/core/dto/arangodb-dto'
 import ArangoDBRepositoryOutputPort from '@/lib/core/port/secondary/arangodb-repository-output-port'
 import GATEWAYS from '../ioc/ioc-symbols-gateway'
 import type EnvConfigGatewayOutputPort from '@/lib/core/port/secondary/env-config-gateway-output-port'
@@ -8,57 +8,40 @@ import { BaseDTO } from '@/lib/sdk/dto'
 
 @injectable()
 class ArangoDBRepository implements ArangoDBRepositoryOutputPort {
-  arangoDB: Database | undefined
-  constructor(@inject(GATEWAYS.ENV_CONFIG) private envConfig: EnvConfigGatewayOutputPort) {
-    this.arangoDB = undefined
-  }
+  constructor(@inject(GATEWAYS.ENV_CONFIG) private envConfig: EnvConfigGatewayOutputPort) { }
 
-  async connect(useDefaultDatabase: boolean = true): Promise<ArangoDBInitDTO<Database>> {
-    if (this.arangoDB) return { status: 'success', arangoDB: this.arangoDB }
-
+  async use(): Promise<ArangoDBConnectionDTO<Database>> {
     const { URL, PORT, DATABASE, USERNAME, PASSWORD } = this.envConfig.arangoDBConfig()
 
     try {
       const db = new Database({
         url: `${URL}:${PORT}`,
-        databaseName: useDefaultDatabase ? DATABASE : undefined,
+        databaseName: DATABASE,
         auth: { username: USERNAME, password: PASSWORD },
       })
-      this.arangoDB = db
       return { status: 'success', arangoDB: db }
     } catch (error: any) {
       return { status: 'error', errorMessage: error.message }
     }
   }
 
-  async createDatabase(databaseName?: string | undefined): Promise<BaseDTO> {
-    try {
-      if (!databaseName) databaseName = this.envConfig.arangoDBConfig().DATABASE
-    } catch (error: any) {
-      return { status: 'error', errorType: error.name, errorMessage: error.message }
-    }
+  async useOrCreateDatabase(): Promise<ArangoDBConnectionDTO<Database>> {
+    const { URL, PORT, DATABASE, USERNAME, PASSWORD } = this.envConfig.arangoDBConfig()
+    if (!DATABASE) return { status: 'error', errorMessage: 'No database name provided in environment variables config' }
 
-    let arangoDB = this.arangoDB
-    // connect to ArangoDB if not already connected
     try {
-      if (!arangoDB) {
-        const arangoInitDTO = await this.connect()
-        if (arangoInitDTO.status === 'error') return { status: 'error', errorMessage: arangoInitDTO.errorMessage }
-        if (!arangoInitDTO.arangoDB) return { status: 'error', errorMessage: 'ArangoDB is not initialized' }
-        arangoDB = arangoInitDTO.arangoDB
+      const db = new Database({
+        url: `${this.envConfig.arangoDBConfig().URL}:${this.envConfig.arangoDBConfig().PORT}`,
+        auth: { username: this.envConfig.arangoDBConfig().USERNAME, password: this.envConfig.arangoDBConfig().PASSWORD },
+      })
+      try {
+        await db.createDatabase(DATABASE)
+        return { status: 'success', arangoDB: db }
+      } catch {
+        return this.use()
       }
     } catch (error: any) {
-      return { status: 'error', errorType: error.name, errorMessage: error.message }
-    }
-
-    // check if database already exists, create if not
-    try {
-      const result = await arangoDB.listDatabases()
-      if (result.includes(databaseName)) return { status: 'success' }
-      await arangoDB.createDatabase(databaseName)
-      return { status: 'success' }
-    } catch (error: any) {
-      return { status: 'error', errorType: 'Arango Error', errorMessage: `Failed to create ${databaseName}. ${error.message}` }
+      return { status: 'error', errorType: error.name, errorCode: error.code, errorMessage: error.message }
     }
   }
 }

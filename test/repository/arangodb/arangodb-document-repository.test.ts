@@ -12,10 +12,8 @@ interface TDocument {
 describe('ArangoDB Document Repository Tests', () => {
     beforeAll(async () => {
         const arangoDBRepository = appContainer.get<ArangoDBRepositoryOutputPort>(REPOSITORY.ARANGODB)
-        await arangoDBRepository.createDatabase()
-        const db = await arangoDBRepository.connect(true)
+        const db = await arangoDBRepository.useOrCreateDatabase()
         expect(db.status).toBe('success')
-        expect(db.arangoDB).toBeDefined()
 
         const arangoDBCollectionRepository = appContainer.get<ArangoDBCollectionRepositoryOutputPort>(REPOSITORY.ARANGODB_COLLECTION)
         const collectionResultDTO: ArangoDBdocumentDTO<TDocument> = await arangoDBCollectionRepository.createDocumentCollection<TDocument>('testCollection')
@@ -30,21 +28,23 @@ describe('ArangoDB Document Repository Tests', () => {
 
 
         const arangoDBRepository = appContainer.get<ArangoDBRepositoryOutputPort>(REPOSITORY.ARANGODB)
-        const db = await arangoDBRepository.connect(true)
+        const db = await arangoDBRepository.useOrCreateDatabase()
         expect(db.status).toBe('success')
-        expect(db.arangoDB).toBeDefined()
-        const arangoDB = db.arangoDB
-        const collectionList = await arangoDB?.listCollections()
-        expect(collectionList).toBeDefined()
-        expect(collectionList?.length).toBeGreaterThan(0)
-        expect(collectionList?.map(collection => collection.name)).toContain('testCollection')
+        if (db.status === 'success') {
+            expect(db.arangoDB).toBeDefined()
+            const arangoDB = db.arangoDB
+            const collectionList = await arangoDB.listCollections()
+            expect(collectionList).toBeDefined()
+            expect(collectionList.length).toBeGreaterThan(0)
+            expect(collectionList.map(collection => collection.name)).toContain('testCollection')
 
-        const cursor = await arangoDB?.collection('testCollection').all()
-        expect(cursor).toBeDefined()
-        expect(cursor?.count).toBeGreaterThan(0)
-        const documents = await cursor?.all()
-        expect(documents).toBeDefined()
-        expect(documents?.length).toBeGreaterThan(0)
-        expect(documents?.map(document => document.name)).toContain('testDocument')
+            const cursor = await arangoDB?.collection('testCollection').all()
+            expect(cursor).toBeDefined()
+            expect(cursor.count).toBeGreaterThan(0)
+            const documents = await cursor.all()
+            expect(documents).toBeDefined()
+            expect(documents?.length).toBeGreaterThan(0)
+            expect(documents?.map(document => document.name)).toContain('testDocument')
+        }
     })
 })

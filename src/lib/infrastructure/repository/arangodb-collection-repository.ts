@@ -2,7 +2,7 @@ import ArangoDBCollectionRepositoryOutputPort from "@/lib/core/port/secondary/ar
 import type ArangoDBRepositoryOutputPort from "@/lib/core/port/secondary/arangodb-repository-output-port";
 import { inject, injectable } from "inversify";
 import REPOSITORY from "../ioc/ioc-symbols-repository";
-import type { ArangoDBCollectionDTO, ArangoDBInitDTO } from "@/lib/core/dto/arangodb-dto";
+import type { ArangoDBCollectionDTO, ArangoDBConnectionDTO } from "@/lib/core/dto/arangodb-dto";
 import { Database } from "arangojs";
 import { DocumentCollection, EdgeCollection } from "arangojs/collection";
 
@@ -12,7 +12,7 @@ class ArangoDBCollectionRepository implements ArangoDBCollectionRepositoryOutput
     constructor(
         @inject(REPOSITORY.ARANGODB) private arangoDBRepository: ArangoDBRepositoryOutputPort
     ) {
-        this.arangoDBRepository.connect(true).then((arangoDBConnectionDTO: ArangoDBInitDTO<Database>) => {
+        this.arangoDBRepository.use(true).then((arangoDBConnectionDTO: ArangoDBConnectionDTO<Database>) => {
             if (arangoDBConnectionDTO.status == 'error')
                 return { status: 'error', errorMessage: arangoDBConnectionDTO.errorMessage }
             const arangoDB = arangoDBConnectionDTO.arangoDB
@@ -23,7 +23,7 @@ class ArangoDBCollectionRepository implements ArangoDBCollectionRepositoryOutput
 
     async initialize(): Promise<Database | undefined> {
         if (this.arangoDB) return this.arangoDB
-        const arangoConnectDTO: ArangoDBInitDTO<Database> = await this.arangoDBRepository.connect(true)
+        const arangoConnectDTO: ArangoDBConnectionDTO<Database> = await this.arangoDBRepository.use(true)
         if (arangoConnectDTO.status === 'error') return
         if (!arangoConnectDTO.arangoDB) return
         return arangoConnectDTO.arangoDB

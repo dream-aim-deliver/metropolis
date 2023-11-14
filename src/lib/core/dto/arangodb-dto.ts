@@ -3,9 +3,22 @@ import { BaseDTO } from '@/lib/sdk/dto'
 /**
  * ArangoDBInitDTO contains information about status of connecting and initializing ArangoDB
  */
-export interface ArangoDBInitDTO<DB> extends BaseDTO {
-  arangoDB?: DB | undefined
+export interface ArangoDBConnectionSuccessDTO<DB> extends BaseDTO {
+  status: 'success',
+  arangoDB: DB | undefined
 }
+
+/**
+ * ArangoDBInitDTO contains information about status of connecting and initializing ArangoDB
+ */
+export interface ArangoDBConnectionErrorDTO extends BaseDTO {
+  status: 'error',
+  errorType: string | undefined,
+  errorCode: number | undefined,
+  errorMessage: string
+}
+
+export type ArangoDBConnectionDTO<DB> = ArangoDBConnectionSuccessDTO<DB> | ArangoDBConnectionErrorDTO
 
 /**
  * ArangoDBCollectionDTO contains information about status of creating a collection in ArangoDB

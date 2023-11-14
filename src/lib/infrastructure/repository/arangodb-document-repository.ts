@@ -16,7 +16,7 @@ class ArangoDBDocumentRepository implements ArangoDBDocumentRepositoryOutputPort
 
     async initialize(): Promise<Database | undefined> {
         if (this.arangoDB) return this.arangoDB
-        const arangoConnectDTO = await this.arangoDBRepository.connect(true)
+        const arangoConnectDTO = await this.arangoDBRepository.use(true)
         if (arangoConnectDTO.status === 'error') return
         if (!arangoConnectDTO.arangoDB) return
         return arangoConnectDTO.arangoDB
