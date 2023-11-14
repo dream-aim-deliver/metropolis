@@ -14,6 +14,10 @@ import { loadFeaturesSync } from '@/lib/sdk/ioc-helpers'
 import ArangoDBRepositoryOutputPort from '@/lib/core/port/secondary/arangodb-repository-output-port'
 import ArangoDBRepository from '../repository/arangodb-repository'
 import REPOSITORY from './ioc-symbols-repository'
+import ArangoDBCollectionRepositoryOutputPort from '@/lib/core/port/secondary/arangodb-collection-repository-output-port'
+import ArangoDBCollectionRepository from '../repository/arangodb-collection-repository'
+import ArangoDBDocumentRepositoryOutputPort from '@/lib/core/port/secondary/arandogb-document-repository-output-port'
+import ArangoDBDocumentRepository from '../repository/arangodb-document-repository'
 
 /**
  * IoC Container configuration for the application.
@@ -26,5 +30,7 @@ appContainer.bind<StreamGatewayOutputPort>(GATEWAYS.STREAM).to(StreamingGateway)
 
 /** REPOSITORIES */
 appContainer.bind<ArangoDBRepositoryOutputPort>(REPOSITORY.ARANGODB).to(ArangoDBRepository)
+appContainer.bind<ArangoDBCollectionRepositoryOutputPort>(REPOSITORY.ARANGODB_COLLECTION).to(ArangoDBCollectionRepository)
+appContainer.bind<ArangoDBDocumentRepositoryOutputPort>(REPOSITORY.ARANGODB_DOCUMENT).to(ArangoDBDocumentRepository)
 
 export default appContainer
