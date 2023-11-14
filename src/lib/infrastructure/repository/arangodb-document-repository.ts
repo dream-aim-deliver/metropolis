@@ -5,7 +5,7 @@ import type ArangoDBRepositoryOutputPort from "@/lib/core/port/secondary/arangod
 import { Database } from "arangojs/database";
 import { ArangoDBdocumentDTO } from "@/lib/core/dto/arangodb-dto";
 import { ArangoCollection, DocumentCollection, EdgeCollection } from "arangojs/collection";
-import { EdgeData } from "arangojs/documents";
+import { DocumentMetadata, EdgeData } from "arangojs/documents";
 
 @injectable()
 class ArangoDBDocumentRepository implements ArangoDBDocumentRepositoryOutputPort {
@@ -16,14 +16,14 @@ class ArangoDBDocumentRepository implements ArangoDBDocumentRepositoryOutputPort
 
     async initialize(): Promise<Database | undefined> {
         if (this.arangoDB) return this.arangoDB
-        const arangoConnectDTO = await this.arangoDBRepository.use(true)
+        const arangoConnectDTO = await this.arangoDBRepository.useOrCreateDatabase()
         if (arangoConnectDTO.status === 'error') return
         if (!arangoConnectDTO.arangoDB) return
         return arangoConnectDTO.arangoDB
 
     }
 
-    async createDocument<TDocument extends Record<string, any> | EdgeData>(collectionName: string, document: TDocument): Promise<ArangoDBdocumentDTO<TDocument>> {
+    async createDocument<TDocument extends Record<string, any> | EdgeData>(collectionName: string, document: TDocument): Promise<ArangoDBdocumentDTO<DocumentMetadata & { new?: any }>> {
         if (!this.arangoDB) {
             this.arangoDB = await this.initialize()
         }
@@ -46,7 +46,7 @@ class ArangoDBDocumentRepository implements ArangoDBDocumentRepositoryOutputPort
                 return { status: 'error', errorType: 'Arango Error', errorMessage: `Collection ${collectionName} does not exist. Please create it before adding documents.` }
             }
             const doc = await collection.save(document)
-            return { status: 'success', document: document }
+            return { status: 'success', document: doc }
         } catch (error: any) {
             return { status: 'error', errorType: 'Arango Error', errorMessage: `Failed to create Document in ${collectionName}. ${error.message}` }
         }

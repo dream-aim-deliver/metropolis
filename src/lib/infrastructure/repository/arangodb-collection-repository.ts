@@ -11,19 +11,11 @@ class ArangoDBCollectionRepository implements ArangoDBCollectionRepositoryOutput
     arangoDB: Database | undefined
     constructor(
         @inject(REPOSITORY.ARANGODB) private arangoDBRepository: ArangoDBRepositoryOutputPort
-    ) {
-        this.arangoDBRepository.use(true).then((arangoDBConnectionDTO: ArangoDBConnectionDTO<Database>) => {
-            if (arangoDBConnectionDTO.status == 'error')
-                return { status: 'error', errorMessage: arangoDBConnectionDTO.errorMessage }
-            const arangoDB = arangoDBConnectionDTO.arangoDB
-            if (!arangoDB) return { status: 'error', errorMessage: 'ArangoDB is not initialized' }
-            this.arangoDB = arangoDB
-        })
-    }
+    ) { }
 
     async initialize(): Promise<Database | undefined> {
         if (this.arangoDB) return this.arangoDB
-        const arangoConnectDTO: ArangoDBConnectionDTO<Database> = await this.arangoDBRepository.use(true)
+        const arangoConnectDTO: ArangoDBConnectionDTO<Database> = await this.arangoDBRepository.useOrCreateDatabase()
         if (arangoConnectDTO.status === 'error') return
         if (!arangoConnectDTO.arangoDB) return
         return arangoConnectDTO.arangoDB

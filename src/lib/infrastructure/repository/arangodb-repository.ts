@@ -21,13 +21,13 @@ class ArangoDBRepository implements ArangoDBRepositoryOutputPort {
       })
       return { status: 'success', arangoDB: db }
     } catch (error: any) {
-      return { status: 'error', errorMessage: error.message }
+      return { status: 'error', errorCode: error.code, errorType: "ArangoDB Repo", errorMessage: error.message }
     }
   }
 
   async useOrCreateDatabase(): Promise<ArangoDBConnectionDTO<Database>> {
     const { URL, PORT, DATABASE, USERNAME, PASSWORD } = this.envConfig.arangoDBConfig()
-    if (!DATABASE) return { status: 'error', errorMessage: 'No database name provided in environment variables config' }
+    if (!DATABASE) return { status: 'error', errorCode: 500, errorType: "Env Config Gateway", errorMessage: 'No database name provided in environment variables config' }
 
     try {
       const db = new Database({
