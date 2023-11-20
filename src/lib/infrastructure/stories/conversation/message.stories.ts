@@ -23,5 +23,6 @@ export const UserMessage: Story = {
     timestamp: new Date(),
     device: DeviceType.DESKTOP,
     mode: Mode.LIGHT,
+    isMichal: false
   },
 }

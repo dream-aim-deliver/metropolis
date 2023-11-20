@@ -7,4 +7,5 @@ export interface MessageViewModel extends BaseComponentViewModel {
   timestamp: Date
   content: string
   type: MessageType
+  isMichal: boolean
 }

@@ -16,7 +16,7 @@ export const Color = ({
     const backgroundColor = color.toHex();
     return (
         <div
-            className="flex box-border h-32 w-32 p-4 border-4 items-center justify-between"
+            className="flex box-border h-48 w-48 p-4 border-2 items-center justify-between"
             style={{ backgroundColor: backgroundColor }}
         >
             <div className="text-slate-800 self-start">{name}</div>

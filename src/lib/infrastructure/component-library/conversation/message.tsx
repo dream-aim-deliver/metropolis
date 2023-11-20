@@ -6,6 +6,7 @@ export const Message = ({
     name = "Vania Santos",
     timestamp = new Date(),
     content = "Hello World",
+    isMichal = false
 }: MessageViewModel) => {
     const firstLetterOfName = name.charAt(0).toUpperCase();
     const timestampString = timestamp.toUTCString();
@@ -15,6 +16,7 @@ export const Message = ({
             <div className="float-left self-end">
                 <Avatar sx={{ bgcolor: deepOrange[500] }}>{firstLetterOfName}</Avatar>
             </div>
+            {isMichal && <div>BIG MICHAL IS HERE</div>}
             {/* Message Block */}
             <div className="">
                 <div className="flex space-x-4 align-text-top">
