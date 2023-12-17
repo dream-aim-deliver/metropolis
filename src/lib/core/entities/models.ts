@@ -1,12 +1,12 @@
 export type BaseModel = {
   id: number
-  created_at: Date
-  updated_at: Date
+  createdAt: Date
+  updatedAt: Date
 }
 
 export type SoftDeletableBaseModel = BaseModel & {
   deleted: boolean
-  deleted_at?: Date
+  deletedAt?: Date
 }
 
 /* Metropolis Entity Types */
@@ -21,11 +21,11 @@ export enum MetropolisEntityType {
  * Represents a base entity that can be an agent, a group or a client
  * @typedef {Object} BaseMetropolisEntity
  * @property {string} name - The name of the entity
- * @property {MetropolisEntityType} entity_type - The type of the entity
+ * @property {MetropolisEntityType} entityType - The type of the entity
  */
 export type BaseMetropolisEntity = SoftDeletableBaseModel & {
   name: string
-  entity_type: MetropolisEntityType
+  entityType: MetropolisEntityType
 }
 
 export enum AgentType {
@@ -36,13 +36,13 @@ export enum AgentType {
 /**
  * Represents an agent entity
  * @typedef {Object} AgentMetropolisEntity
- * @property {MetropolisEntityType} entity_type - The type of the entity
- * @property {AgentType} agent_type - The type of the agent
+ * @property {MetropolisEntityType} entityType - The type of the entity
+ * @property {AgentType} agentType - The type of the agent
  * @property {string} motivation - The motivation of the agent
  */
 export type AgentMetropolisEntity = BaseMetropolisEntity & {
-  entity_type: MetropolisEntityType.AGENT
-  agent_type: AgentType
+  entityType: MetropolisEntityType.AGENT
+  agentType: AgentType
   motivation: string
 }
 
@@ -58,13 +58,13 @@ export enum GroupType {
 /**
  * Represents a group entity
  * @typedef {Object} GroupMetropolisEntity
- * @property {MetropolisEntityType} entity_type - The type of the entity
- * @property {GroupType} group_type - The type of the group
+ * @property {MetropolisEntityType} entityType - The type of the entity
+ * @property {GroupType} groupType - The type of the group
  * @property {string} mission - The mission of the group
  */
 export type GroupMetropolisEntity = BaseMetropolisEntity & {
-  entity_type: MetropolisEntityType.GROUP
-  group_type: GroupType
+  entityType: MetropolisEntityType.GROUP
+  groupType: GroupType
   mission: string
 }
 
@@ -73,14 +73,14 @@ export type GroupMetropolisEntity = BaseMetropolisEntity & {
  * @typedef {Object} Address
  * @property {string} street - The street of the address
  * @property {string} number - The number of the address
- * @property {string} postal_code - The postal code of the address
+ * @property {string} postalCode - The postal code of the address
  * @property {string} city - The city of the address
  * @property {string} country - The country of the address
  */
 export type Address = {
   street: string
   number: string
-  postal_code: string
+  postalCode: string
   city: string
   country: string
 }
@@ -88,28 +88,28 @@ export type Address = {
 /**
  * Represents a the information of a client
  * @typedef {Object} ClientInformation
- * @property {string} company_name - The name of the company
- * @property {string} person_name - The name of the person
- * @property {string} person_email - The email of the person
+ * @property {string} companyName - The name of the company
+ * @property {string} personName - The name of the person
+ * @property {string} personEmail - The email of the person
  * @property {Address} address - The address of the company
- * @property {string} phone_number - The phone number of the company
+ * @property {string} phoneNumber - The phone number of the company
  */
 export type ClientInformation = {
-  company_name: string
-  person_name?: string
-  person_email?: string
+  companyName: string
+  personName?: string
+  personEmail?: string
   address: Address
-  phone_number: string
+  phoneNumber: string
 }
 
 /**
  * Represents a client entity
  * @typedef {Object} ClientMetropolisEntity
- * @property {MetropolisEntityType} entity_type - The type of the entity
+ * @property {MetropolisEntityType} entityType - The type of the entity
  * @property {ClientInformation} information - The information of the client
  */
 export type ClientMetropolisEntity = BaseMetropolisEntity & {
-  entity_type: MetropolisEntityType.CLIENT
+  entityType: MetropolisEntityType.CLIENT
   information: ClientInformation
 }
 
@@ -192,11 +192,11 @@ export type PoolOrAccount = SoftDeletableBaseModel & {
  * Represents the relation of an agent being the owner of a pool or account
  * @typedef {Object} PoolOrAccountOwnerRelation
  * @property {BaseMetropolisEntity} owner - The metropolis entity that is the owner of the pool or account
- * @property {PoolOrAccount} pool_or_account - The pool or account that the metropolis entity is the owner of
+ * @property {PoolOrAccount} poolOrAccount - The pool or account that the metropolis entity is the owner of
  */
 export type PoolOrAccountOwnerRelation = {
   owner: BaseMetropolisEntity
-  pool_or_account: PoolOrAccount
+  poolOrAccount: PoolOrAccount
 }
 
 /* Task, Review, Activity */
@@ -262,7 +262,7 @@ export enum LifecycleStateType {
  * @property {string} description - The description of the task
  * @property {number} weight - The weight of the task
  * @property {number} performance - The performance of the task
- * @property {LifecycleStateType} lifecycle_state - The lifecycle state of the task
+ * @property {LifecycleStateType} lifecycleState - The lifecycle state of the task
  */
 export type Task = SoftDeletableBaseModel & {
   name: string
@@ -271,8 +271,8 @@ export type Task = SoftDeletableBaseModel & {
   provider: AgentMetropolisEntity | GroupMetropolisEntity
   weight: number
   performance: number
-  lifecycle_state: LifecycleStateType
-  due_date: Date
+  lifecycleState: LifecycleStateType
+  dueDate: Date
 }
 
 /**
@@ -362,7 +362,7 @@ export enum TransactionCategory {
  * @property {TransactionStrategy} strategy - The strategy of the transaction
  * @property {TransactionType} type - The type of the transaction
  * @property {TransactionCategory} category - The category of the transaction
- * @property {string} additional_context - The additional context of the transaction
+ * @property {string} additionalContext - The additional context of the transaction
  */
 export type BaseTransaction = SoftDeletableBaseModel & {
   name: string
@@ -373,7 +373,7 @@ export type BaseTransaction = SoftDeletableBaseModel & {
   strategy: TransactionStrategy
   type: TransactionType
   category: TransactionCategory
-  additional_context?: string
+  additionalContext?: string
 }
 
 /**
