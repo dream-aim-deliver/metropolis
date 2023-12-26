@@ -18,6 +18,7 @@ import ArangoDBCollectionRepositoryOutputPort from '@/lib/core/port/secondary/ar
 import ArangoDBCollectionRepository from '../repository/arangodb-collection-repository'
 import ArangoDBDocumentRepositoryOutputPort from '@/lib/core/port/secondary/arandogb-document-repository-output-port'
 import ArangoDBDocumentRepository from '../repository/arangodb-document-repository'
+import { Database } from 'arangojs'
 
 /**
  * IoC Container configuration for the application.
@@ -29,7 +30,7 @@ appContainer.bind<EnvConfigGatewayOutputPort>(GATEWAYS.ENV_CONFIG).to(EnvConfigG
 appContainer.bind<StreamGatewayOutputPort>(GATEWAYS.STREAM).to(StreamingGateway)
 
 /** REPOSITORIES */
-appContainer.bind<ArangoDBRepositoryOutputPort>(REPOSITORY.ARANGODB).to(ArangoDBRepository)
+appContainer.bind<ArangoDBRepositoryOutputPort<Database>>(REPOSITORY.ARANGODB).to(ArangoDBRepository)
 appContainer.bind<ArangoDBCollectionRepositoryOutputPort>(REPOSITORY.ARANGODB_COLLECTION).to(ArangoDBCollectionRepository)
 appContainer.bind<ArangoDBDocumentRepositoryOutputPort>(REPOSITORY.ARANGODB_DOCUMENT).to(ArangoDBDocumentRepository)
 
