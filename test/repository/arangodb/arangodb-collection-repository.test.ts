@@ -1,61 +1,130 @@
-import { ArangoDBCollectionDTO } from "@/lib/core/dto/arangodb-dto"
-import ArangoDBCollectionRepositoryOutputPort from "@/lib/core/port/secondary/arangodb-collection-repository-output-port"
-import appContainer from "@/lib/infrastructure/ioc/container-config"
-import REPOSITORY from "@/lib/infrastructure/ioc/ioc-symbols-repository"
-import ArangoDBRepository from "@/lib/infrastructure/repository/arangodb-repository"
-import { DocumentCollection } from "arangojs/collection"
+import { ArangoDBCollectionDTO } from '@/lib/core/dto/arangodb-dto'
+import ArangoDBCollectionRepositoryOutputPort from '@/lib/core/port/secondary/arangodb-collection-repository-output-port'
+import ArangoDBRepositoryOutputPort from '@/lib/core/port/secondary/arangodb-repository-output-port'
+import appContainer from '@/lib/infrastructure/ioc/container-config'
+import REPOSITORY from '@/lib/infrastructure/ioc/ioc-symbols-repository'
+import { Database } from 'arangojs'
+import { DocumentCollection, EdgeCollection } from 'arangojs/collection'
 
 interface TDocument {
-    _key: string
-    _id: string
-    _rev: string
-    name: string
-
+  _key: string
+  _id: string
+  _rev: string
+  name: string
 }
 
+interface TEdge {
+  _key: string
+  _id: string
+  _rev: string
+  _from: string
+  _to: string
+}
+
+const dbName = `testDB-Collection-Repository-${Date.now()}`
+
 describe('ArangoDB Collection Repository Tests', () => {
-    beforeAll(async () => {
-        // const arangoDBRepository = appContainer.get<ArangoDBRepository>(REPOSITORY.ARANGODB)
-        // await arangoDBRepository.createDatabase()
+  beforeAll(async () => {
+    const arangoDBRepository = appContainer.get<ArangoDBRepositoryOutputPort<Database>>(REPOSITORY.ARANGODB)
+    const connectionDTO = await arangoDBRepository.useOrCreateDatabase(dbName)
+    expect(connectionDTO.status).toBe('success')
+  })
 
-    })
-    it('should create a new document collection in ArangoDB', async () => {
-        // const arangoDBCollectionRepository = appContainer.get<ArangoDBCollectionRepositoryOutputPort>(REPOSITORY.ARANGODB_COLLECTION)
-        // const result: ArangoDBCollectionDTO<TDocument, DocumentCollection<TDocument>> = await arangoDBCollectionRepository.createDocumentCollection<TDocument>('testCollection')
-        // console.log(result)
-        // expect(result.status).toBe('success')
-        // expect(result.collection).toBeDefined()
+  it('should create a new document collection in ArangoDB', async () => {
+    // Creation step
+    const arangoDBCollectionRepository = appContainer.get<ArangoDBCollectionRepositoryOutputPort>(REPOSITORY.ARANGODB_COLLECTION)
 
-        // const arangoDBRepository = appContainer.get<ArangoDBRepository>(REPOSITORY.ARANGODB)
-        // await arangoDBRepository.createDatabase()
-        // const db = await arangoDBRepository.use()
-        // expect(db.status).toBe('success')
-        // expect(db.arangoDB).toBeDefined()
+    const testDocumentCollectionName = `testDocumentCollection-${Date.now()}`
 
-        // const arangoDB = db.arangoDB
-        // const collectionList = await arangoDB?.listCollections()
-        // expect(collectionList).toBeDefined()
-        // expect(collectionList?.length).toBeGreaterThan(0)
-        // expect(collectionList?.map(collection => collection.name)).toContain('testCollection')
+    const result: ArangoDBCollectionDTO<TDocument, DocumentCollection<TDocument>> = await arangoDBCollectionRepository.createDocumentCollection<TDocument>(
+      testDocumentCollectionName,
+      dbName,
+    )
 
-    })
+    // Verification step
+    expect(result.status).toBe('success')
+    expect(result.collection).toBeDefined()
+    if (result.status == 'success' && result.collection) {
+      const collection = result.collection
+      const collectionExists = await collection.exists()
+      expect(collectionExists).toBe(true)
+    }
 
-    it('should create a new edge collection in ArangoDB', async () => {
-        // const arangoDBCollectionRepository = appContainer.get<ArangoDBCollectionRepositoryOutputPort>(REPOSITORY.ARANGODB_COLLECTION)
-        // const result: ArangoDBCollectionDTO<TDocument, DocumentCollection<TDocument>> = await arangoDBCollectionRepository.createEdgeCollection<TDocument>('testEdgeCollection')
-        // expect(result.status).toBe('success')
-        // expect(result.collection).toBeDefined()
+    // Manual verification step
+    const arangoDBRepository = appContainer.get<ArangoDBRepositoryOutputPort<Database>>(REPOSITORY.ARANGODB)
+    const connectionDTO = await arangoDBRepository.useOrCreateDatabase(dbName)
+    expect(connectionDTO.status).toBe('success')
 
-        // const arangoDBRepository = appContainer.get<ArangoDBRepository>(REPOSITORY.ARANGODB)
-        // const db = await arangoDBRepository.use()
-        // expect(db.status).toBe('success')
-        // expect(db.arangoDB).toBeDefined()
+    if (connectionDTO.status === 'success') {
+      expect(connectionDTO.arangoDB).toBeDefined()
+      if (connectionDTO.arangoDB) {
+        const arangoDB = connectionDTO.arangoDB
+        const testCollection = arangoDB.collection(testDocumentCollectionName)
+        const testCollectionExists = await testCollection.exists()
+        expect(testCollectionExists).toBe(true)
 
-        // const arangoDB = db.arangoDB
-        // const collectionList = await arangoDB?.listCollections()
-        // expect(collectionList).toBeDefined()
-        // expect(collectionList?.length).toBeGreaterThan(0)
-        // expect(collectionList?.map(collection => collection.name)).toContain('testEdgeCollection')
+        const allCollections = await arangoDB.listCollections()
+        expect(allCollections).toBeDefined()
+        expect(allCollections?.length).toBeGreaterThan(0)
+        expect(allCollections?.map(collection => collection.name)).toContain(testDocumentCollectionName)
+      }
+    }
+  })
 
-    })
+  it('should create a new edge collection in ArangoDB', async () => {
+    // Creation step
+    const arangoDBCollectionRepository = appContainer.get<ArangoDBCollectionRepositoryOutputPort>(REPOSITORY.ARANGODB_COLLECTION)
+
+    const testEdgeCollectionName = `testEdgeCollection-${Date.now()}`
+    const result: ArangoDBCollectionDTO<TEdge, EdgeCollection<TEdge>> = await arangoDBCollectionRepository.createEdgeCollection<TEdge>(testEdgeCollectionName, dbName)
+
+    // Verification step
+    expect(result.status).toBe('success')
+    expect(result.collection).toBeDefined()
+    if (result.status == 'success' && result.collection) {
+      const collection = result.collection
+      const collectionExists = await collection.exists()
+      expect(collectionExists).toBe(true)
+    }
+
+    // Manual verification step
+    const arangoDBRepository = appContainer.get<ArangoDBRepositoryOutputPort<Database>>(REPOSITORY.ARANGODB)
+    const connectionDTO = await arangoDBRepository.useOrCreateDatabase(dbName)
+    expect(connectionDTO.status).toBe('success')
+
+    if (connectionDTO.status === 'success') {
+      expect(connectionDTO.arangoDB).toBeDefined()
+      if (connectionDTO.arangoDB) {
+        const arangoDB = connectionDTO.arangoDB
+        const testCollection = arangoDB.collection(testEdgeCollectionName)
+        const testCollectionExists = await testCollection.exists()
+        expect(testCollectionExists).toBe(true)
+
+        const allCollections = await arangoDB.listCollections()
+        expect(allCollections).toBeDefined()
+        expect(allCollections?.length).toBeGreaterThan(0)
+        expect(allCollections?.map(collection => collection.name)).toContain(testEdgeCollectionName)
+      }
+    }
+  })
+  afterAll(async () => {
+    const arangoDBRepository = appContainer.get<ArangoDBRepositoryOutputPort<Database>>(REPOSITORY.ARANGODB)
+    const connectionDTO = await arangoDBRepository.useOrCreateDatabase()
+    expect(connectionDTO.status).toBe('success')
+
+    if (connectionDTO.status === 'success') {
+      expect(connectionDTO.arangoDB).toBeDefined()
+      if (connectionDTO.arangoDB) {
+        const system_db = connectionDTO.arangoSystemDB
+        try {
+          await system_db.dropDatabase(dbName)
+        } catch (error) {
+          console.log(`Failed to drop database ${dbName}`)
+          throw error
+        }
+        const dbExists = await system_db.database(dbName).exists()
+        expect(dbExists).toBe(false)
+      }
+    }
+  })
 })
