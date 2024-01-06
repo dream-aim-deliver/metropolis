@@ -16,7 +16,7 @@ import ArangoDBRepository from '../repository/arangodb-repository'
 import REPOSITORY from './ioc-symbols-repository'
 import ArangoDBCollectionRepositoryOutputPort from '@/lib/core/port/secondary/arangodb-collection-repository-output-port'
 import ArangoDBCollectionRepository from '../repository/arangodb-collection-repository'
-import ArangoDBDocumentRepositoryOutputPort from '@/lib/core/port/secondary/arandogb-document-repository-output-port'
+import ArangoDBDocumentRepositoryOutputPort from '@/lib/core/port/secondary/arangogb-document-repository-output-port'
 import ArangoDBDocumentRepository from '../repository/arangodb-document-repository'
 import { Database } from 'arangojs'
 
