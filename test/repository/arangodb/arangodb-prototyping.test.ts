@@ -16,6 +16,8 @@ describe('ArangoDB prototyping and scripting', () => {
     // DB Initialization step
     const arangoDBRepository = appContainer.get<ArangoDBRepositoryOutputPort<Database>>(REPOSITORY.ARANGODB)
     const connectionDTO = await arangoDBRepository.useOrCreateDatabase(dbName)
+    expect(connectionDTO.status).toBe('success')
+    expect(connectionDTO).toBeDefined()
     if (connectionDTO.status === 'success' && connectionDTO.arangoSystemDB) {
       expect(connectionDTO.arangoSystemDB).toBeDefined()
       const system_db = connectionDTO.arangoSystemDB
