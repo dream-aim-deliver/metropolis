@@ -24,7 +24,7 @@ jobs:
       - name: Start containers
         run: |
           docker pull arangodb:latest
-          npm run docker:test
+          npm run docker:test-up
           sleep 60
       - name: Run Gateway Tests
         run: npm run test:gateway

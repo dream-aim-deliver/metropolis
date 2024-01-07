@@ -1,3 +1,4 @@
+import { genUniqName } from '@/lib/common/utils'
 import ArangoDBRepositoryOutputPort from '@/lib/core/port/secondary/arangodb-repository-output-port'
 import appContainer from '@/lib/infrastructure/ioc/container-config'
 import REPOSITORY from '@/lib/infrastructure/ioc/ioc-symbols-repository'
@@ -7,14 +8,13 @@ interface TDocument {
   name: string
 }
 
-const timestamp = Date.now()
-const dbName = `testDB-${timestamp}`
-
 describe('ArangoDB prototyping and scripting', () => {
   beforeAll(async () => {})
   it('Check if databases can be created and dropped ad hoc', async () => {
     // DB Initialization step
     const arangoDBRepository = appContainer.get<ArangoDBRepositoryOutputPort<Database>>(REPOSITORY.ARANGODB)
+
+    const dbName = genUniqName(`testDB-Repository`)
     const connectionDTO = await arangoDBRepository.useOrCreateDatabase(dbName)
     expect(connectionDTO.status).toBe('success')
     expect(connectionDTO).toBeDefined()

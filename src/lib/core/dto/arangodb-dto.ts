@@ -22,17 +22,6 @@ export interface ArangoDBConnectionErrorDTO extends BaseDTO {
 export type ArangoDBConnectionDTO<DB> = ArangoDBConnectionSuccessDTO<DB> | ArangoDBConnectionErrorDTO
 
 /**
- * ArangoDBEnvVariablesDTO contains the values of the environment variables required for ArangoDB
- */
-export interface ArangoDBEnvVariablesDTO extends BaseDTO {
-  URL?: string
-  PORT?: number
-  DATABASE?: string
-  USERNAME?: string
-  PASSWORD?: string
-}
-
-/**
  * ArangoDBCollectionDTO contains information about status of creating a collection in ArangoDB
  * @typeparam TDocument The type of the documents int the collection
  * @typeparam TCollection The type of the collection

@@ -7,21 +7,22 @@ import REPOSITORY from '@/lib/infrastructure/ioc/ioc-symbols-repository'
 import { Database, aql } from 'arangojs'
 import { QueryOptions } from 'arangojs/database'
 import { DocumentMetadata } from 'arangojs/documents'
-
+import { genUniqName } from '@/lib/common/utils'
 interface TDocument {
   name: string
 }
 
-const testCollectionName = `testCollection-at-${Date.now()}`
+const dbName = genUniqName('testDB-Repository')
+const testCollectionName = genUniqName('testCollection')
 
 describe('ArangoDB Document Repository Tests', () => {
   beforeAll(async () => {
     const arangoDBRepository = appContainer.get<ArangoDBRepositoryOutputPort<Database>>(REPOSITORY.ARANGODB)
-    const db = await arangoDBRepository.useOrCreateDatabase()
+    const db = await arangoDBRepository.useOrCreateDatabase(dbName)
     expect(db.status).toBe('success')
 
     const arangoDBCollectionRepository = appContainer.get<ArangoDBCollectionRepositoryOutputPort>(REPOSITORY.ARANGODB_COLLECTION)
-    const collectionResultDTO: ArangoDBdocumentDTO<TDocument> = await arangoDBCollectionRepository.createDocumentCollection<TDocument>(testCollectionName)
+    const collectionResultDTO: ArangoDBdocumentDTO<TDocument> = await arangoDBCollectionRepository.createDocumentCollection<TDocument>(testCollectionName, dbName)
     expect(collectionResultDTO.status).toBe('success')
   })
 
@@ -31,7 +32,7 @@ describe('ArangoDB Document Repository Tests', () => {
 
     const testDocument = { name: 'testDocument' }
 
-    const result: ArangoDBdocumentDTO<DocumentMetadata> = await arangoDBDocumentRepository.createDocument<TDocument>(testCollectionName, testDocument)
+    const result: ArangoDBdocumentDTO<DocumentMetadata> = await arangoDBDocumentRepository.createDocument<TDocument>(testCollectionName, testDocument, dbName)
 
     // Verification step
     expect(result.status).toBe('success')
@@ -39,7 +40,7 @@ describe('ArangoDB Document Repository Tests', () => {
 
     // Manual verification step
     const arangoDBRepository = appContainer.get<ArangoDBRepositoryOutputPort<Database>>(REPOSITORY.ARANGODB)
-    const connectionDTO = await arangoDBRepository.useOrCreateDatabase()
+    const connectionDTO = await arangoDBRepository.useOrCreateDatabase(dbName)
     expect(connectionDTO.status).toBe('success')
 
     if (connectionDTO.status === 'success') {
@@ -82,7 +83,22 @@ describe('ArangoDB Document Repository Tests', () => {
 
     const testDocument = { name: 'testDocument' }
 
-    const result: ArangoDBdocumentDTO<DocumentMetadata> = await arangoDBDocumentRepository.createDocuments<TDocument>(testCollectionName, [testDocument])
+    const result: ArangoDBdocumentDTO<DocumentMetadata> = await arangoDBDocumentRepository.createDocuments<TDocument>(testCollectionName, [testDocument], dbName)
     expect(result.status).toBe('success')
+  })
+  afterAll(async () => {
+    const arangoDBRepository = appContainer.get<ArangoDBRepositoryOutputPort<Database>>(REPOSITORY.ARANGODB)
+    const connectionDTO = await arangoDBRepository.useOrCreateDatabase(dbName)
+    expect(connectionDTO.status).toBe('success')
+
+    if (connectionDTO.status === 'success') {
+      expect(connectionDTO.arangoDB).toBeDefined()
+      if (connectionDTO.arangoDB) {
+        const system_db = connectionDTO.arangoSystemDB
+        await system_db.dropDatabase(dbName)
+        const dbExists = await system_db.database(dbName).exists()
+        expect(dbExists).toBe(false)
+      }
+    }
   })
 })

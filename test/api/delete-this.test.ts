@@ -1,5 +1,3 @@
-describe('delete-this', () => {
-  it('is a dummy test', () => {
-    expect(true).toBeTruthy()
-  })
+test('dummy test', () => {
+  expect(true).toBe(true)
 })

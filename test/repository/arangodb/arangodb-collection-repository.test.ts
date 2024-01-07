@@ -1,3 +1,4 @@
+import { genUniqName } from '@/lib/common/utils'
 import { ArangoDBCollectionDTO } from '@/lib/core/dto/arangodb-dto'
 import ArangoDBCollectionRepositoryOutputPort from '@/lib/core/port/secondary/arangodb-collection-repository-output-port'
 import ArangoDBRepositoryOutputPort from '@/lib/core/port/secondary/arangodb-repository-output-port'
@@ -21,7 +22,7 @@ interface TEdge {
   _to: string
 }
 
-const dbName = `testDB-Collection-Repository-${Date.now()}`
+const dbName = genUniqName('testDB-Collection-Repository')
 
 describe('ArangoDB Collection Repository Tests', () => {
   beforeAll(async () => {
@@ -34,7 +35,7 @@ describe('ArangoDB Collection Repository Tests', () => {
     // Creation step
     const arangoDBCollectionRepository = appContainer.get<ArangoDBCollectionRepositoryOutputPort>(REPOSITORY.ARANGODB_COLLECTION)
 
-    const testDocumentCollectionName = `testDocumentCollection-${Date.now()}`
+    const testDocumentCollectionName = genUniqName(`testDocumentCollection`)
 
     const result: ArangoDBCollectionDTO<TDocument, DocumentCollection<TDocument>> = await arangoDBCollectionRepository.createDocumentCollection<TDocument>(
       testDocumentCollectionName,
@@ -75,7 +76,7 @@ describe('ArangoDB Collection Repository Tests', () => {
     // Creation step
     const arangoDBCollectionRepository = appContainer.get<ArangoDBCollectionRepositoryOutputPort>(REPOSITORY.ARANGODB_COLLECTION)
 
-    const testEdgeCollectionName = `testEdgeCollection-${Date.now()}`
+    const testEdgeCollectionName = genUniqName(`testEdgeCollection`)
     const result: ArangoDBCollectionDTO<TEdge, EdgeCollection<TEdge>> = await arangoDBCollectionRepository.createEdgeCollection<TEdge>(testEdgeCollectionName, dbName)
 
     // Verification step
@@ -109,19 +110,15 @@ describe('ArangoDB Collection Repository Tests', () => {
   })
   afterAll(async () => {
     const arangoDBRepository = appContainer.get<ArangoDBRepositoryOutputPort<Database>>(REPOSITORY.ARANGODB)
-    const connectionDTO = await arangoDBRepository.useOrCreateDatabase()
+    const connectionDTO = await arangoDBRepository.useOrCreateDatabase(dbName)
     expect(connectionDTO.status).toBe('success')
 
     if (connectionDTO.status === 'success') {
       expect(connectionDTO.arangoDB).toBeDefined()
       if (connectionDTO.arangoDB) {
         const system_db = connectionDTO.arangoSystemDB
-        try {
-          await system_db.dropDatabase(dbName)
-        } catch (error) {
-          console.log(`Failed to drop database ${dbName}`)
-          throw error
-        }
+
+        await system_db.dropDatabase(dbName)
         const dbExists = await system_db.database(dbName).exists()
         expect(dbExists).toBe(false)
       }
