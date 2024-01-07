@@ -7,7 +7,7 @@ import { TRequestModel, TResponseModel, StreamDTO, TDTO } from '../fixtures/mode
 import { SecondPipelineElement } from '../fixtures/pipeline-elements'
 import { TestPresenter } from '../fixtures/presenter'
 import { Readable } from 'stream'
-import { MockHttpStreamableResponseFactory } from 'test/fixtures/http-fixtures'
+import { MockHttpStreamableResponseFactory } from '../../fixtures/http-fixtures'
 
 describe('Post Processing Streaming Pipeline Error Handling', () => {
   class StupidPipelineElement extends BaseStreamingPostProcessingPipelineElement<TRequestModel, TResponseModel, BaseErrorResponseModel, TDTO> {

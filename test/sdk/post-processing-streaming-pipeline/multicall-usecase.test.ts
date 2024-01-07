@@ -3,7 +3,7 @@ import { BaseSingleEndpointPostProcessingPipelineStreamingUseCase } from '@/lib/
 import { BaseErrorResponseModel, BaseResponseModel } from '@/lib/sdk/usecase-models'
 import { BaseStreamingPostProcessingPipelineElement } from '@/lib/sdk/postprocessing-pipeline-elements'
 import { Readable, Transform, PassThrough } from 'stream'
-import { MockHttpStreamableResponseFactory } from 'test/fixtures/http-fixtures'
+import { MockHttpStreamableResponseFactory } from '../../fixtures/http-fixtures'
 import { TRequestModel as TRequestModel, StreamDTO, TResponseModel } from '../fixtures/models'
 import { FirstPipelineElement, SecondPipelineElement } from '../fixtures/pipeline-elements'
 import { TestPresenter } from '../fixtures/presenter'
