@@ -7,41 +7,71 @@ import { Database } from 'arangojs'
 import { BaseDTO } from '@/lib/sdk/dto'
 
 @injectable()
-class ArangoDBRepository implements ArangoDBRepositoryOutputPort {
-  constructor(@inject(GATEWAYS.ENV_CONFIG) private envConfig: EnvConfigGatewayOutputPort) { }
+class ArangoDBRepository implements ArangoDBRepositoryOutputPort<Database> {
+  constructor(@inject(GATEWAYS.ENV_CONFIG) private envConfig: EnvConfigGatewayOutputPort) {}
 
-  async use(): Promise<ArangoDBConnectionDTO<Database>> {
-    const { URL, PORT, DATABASE, USERNAME, PASSWORD } = this.envConfig.arangoDBConfig()
+  async _repristineDataBase(dbName: string): Promise<BaseDTO> {
+    if (!dbName) {
+      return { status: 'error', errorCode: 500, errorType: 'ArangoDB Repo', errorMessage: 'No database name provided as an argument. Will not repristine anything.' }
+    }
+
+    const connectionDTO = await this.useOrCreateDatabase(dbName)
+    if (connectionDTO.status === 'error' || !connectionDTO.arangoDB) {
+      return { status: 'error', errorType: 'ArangoDB Repo', errorMessage: connectionDTO.errorMessage }
+    }
+
+    const db = connectionDTO.arangoDB
 
     try {
-      const db = new Database({
-        url: `${URL}:${PORT}`,
-        databaseName: DATABASE,
-        auth: { username: USERNAME, password: PASSWORD },
-      })
-      return { status: 'success', arangoDB: db }
+      // Delete all colletions in the database
+      const collections = await db.listCollections()
+      for (const collection of collections) {
+        console.log(`Dropping collection ${collection.name}`)
+        await db.collection(collection.name).drop()
+      }
+
+      // TODO: Create the default collections reading from another file or something
+      const collection_name = `${db.name}Entity`
+      await db.collection(collection_name).create()
+
+      return { status: 'success' }
     } catch (error: any) {
-      return { status: 'error', errorCode: error.code, errorType: "ArangoDB Repo", errorMessage: error.message }
+      return { status: 'error', errorType: error.name, errorCode: error.code, errorMessage: error.message }
     }
   }
 
-  async useOrCreateDatabase(): Promise<ArangoDBConnectionDTO<Database>> {
-    const { URL, PORT, DATABASE, USERNAME, PASSWORD } = this.envConfig.arangoDBConfig()
-    if (!DATABASE) return { status: 'error', errorCode: 500, errorType: "Env Config Gateway", errorMessage: 'No database name provided in environment variables config' }
-
+  async useOrCreateDatabase(databaseName?: string): Promise<ArangoDBConnectionDTO<Database>> {
     try {
-      const db = new Database({
-        url: `${this.envConfig.arangoDBConfig().URL}:${this.envConfig.arangoDBConfig().PORT}`,
-        auth: { username: this.envConfig.arangoDBConfig().USERNAME, password: this.envConfig.arangoDBConfig().PASSWORD },
+      const conf = this.envConfig.arangoDBConfig()
+      const dbName = databaseName || conf.DATABASE
+
+      // NOTE: this object is the _system database
+      const system_db = new Database({
+        url: `${conf.URL}:${conf.PORT}`,
+        auth: { username: conf.USERNAME, password: conf.PASSWORD },
       })
-      try {
-        await db.createDatabase(DATABASE)
-        return { status: 'success', arangoDB: db }
-      } catch {
-        return this.use()
+
+      // This object is the database we want to use, but this command doesn't create it
+      let db: Database
+      db = system_db.database(dbName)
+
+      // We need to check if the database exists...
+      if (!(await db.exists())) {
+        // ...and explicitly create it if it doesn't
+        db = await system_db.createDatabase(dbName)
+      }
+      return {
+        status: 'success',
+        arangoDB: db,
+        arangoSystemDB: system_db,
       }
     } catch (error: any) {
-      return { status: 'error', errorType: error.name, errorCode: error.code, errorMessage: error.message }
+      return {
+        status: 'error',
+        errorType: error.name,
+        errorCode: error.code,
+        errorMessage: error.message,
+      }
     }
   }
 }

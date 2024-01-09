@@ -22,7 +22,7 @@ jobs:
       - name: Start Containers
         run: |
           docker pull arangodb:latest
-          npm run docker:test
+          npm run docker:test-up
           sleep 15
       - name: Install dependencies
         run: npm install
@@ -31,4 +31,4 @@ jobs:
       - name: Run API Tests
         run: npm run test:api
       - name: Stop Containers
-        run: docker compose down
+        run: npm run docker:test-down

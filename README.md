@@ -24,14 +24,23 @@ This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-opti
 
 For Development, you can use the following command to start a ArangoDB container:
 
-```
+```bash
 npm run docker:dev
 ```
 
-For Testing, you can use the following command to start a ArangoDB container:
+### Testing
 
-```
-npm run docker:test
+Use the following commands to start a test ArangoDB container (with a different port: `8531`), where the tests will be run.
+Note that no database is created by default in this ArangoDB instance.
+The tests autogenerate their own unique databases and collections, and then delete them when finished.
+
+```bash
+# 1. Start the test container
+npm run docker:test-up
+# 2. Run the tests
+npm run test
+# 3. Stop the test container
+npm run docker:test-down
 ```
 
 ## Learn More
