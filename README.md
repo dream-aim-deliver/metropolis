@@ -30,7 +30,7 @@ npm run docker:dev
 
 ### Testing
 
-Use the following commands to start a test ArangoDB container (with a different port: `8530`), where the tests will be run.
+Use the following commands to start a test ArangoDB container (with a different port: `8531`), where the tests will be run.
 Note that no database is created by default in this ArangoDB instance.
 The tests autogenerate their own unique databases and collections, and then delete them when finished.
 
