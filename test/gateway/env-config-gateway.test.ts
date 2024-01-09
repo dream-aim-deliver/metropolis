@@ -41,7 +41,7 @@ describe('env-config-gateway', () => {
     const testPASSWORD = 'thereisnospoon'
     const testROOTPASSWORD = 'thereisnospoon'
     const testURL = 'http://localhost'
-    const testPORT = 8530
+    const testPORT = 8531
     const testDATABASE = 'metropolis_test'
 
     expect(result.USERNAME).toBe(testUSERNAME)

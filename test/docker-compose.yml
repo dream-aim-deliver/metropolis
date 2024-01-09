@@ -3,7 +3,7 @@ services:
   arangodb-test:
     image: arangodb
     ports:
-      - '8530:8529' # Note that the host port has to manually match the port in the .env.test file below
+      - '8531:8529' # Note that the host port has to manually match the port in the .env.test file below
     env_file:
       - ../.env.test # Depends on the .env.test file being present in the parent directory
     volumes:

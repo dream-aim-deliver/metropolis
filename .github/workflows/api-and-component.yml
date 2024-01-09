@@ -31,4 +31,4 @@ jobs:
       - name: Run API Tests
         run: npm run test:api
       - name: Stop Containers
-        run: docker compose down
+        run: npm run docker:test-down
